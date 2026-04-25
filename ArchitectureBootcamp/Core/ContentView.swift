@@ -2,7 +2,7 @@
 //  ContentView.swift
 //  ArchitectureBootcamp
 //
-//  Created by Adam Gerber on 25/04/2026.
+//  Created by Adam Gerber on 04/25/2026.
 //
 
 import SwiftUI
@@ -24,13 +24,24 @@ Cons:
  - Not testable, mockable, or reusable
  
  
- 2.
+ 2. MV Architecture (Vanilla SwiftUI)
  
+ - DataManager is shared across the app
+ - DataManager is responsible for business logic and data logic
  
+ Pros:
+ - Less code
+ - Easy to reuse business logic
+ 
+ Cons:
+ - Tightly coupled the business logic to the data logic
+ - "Too easy" to reuse data (other View's can affect each other)
+ - DataManager is semi-testable
  
  3. MVC Architecture (Vanilla SwiftUI)
  
- - There is a DataManager, Views are responsible for business logic but not data logic
+ - DataManager is shared across the app
+ - Views are responsible for business logic but not data logic
  - View holds the array of products
  
  Pros:
@@ -64,7 +75,7 @@ struct ContentView: View {
     @Environment(DataManager.self) private var dataManager
     
     @State private var products: [Product] = []
-    
+
     var body: some View {
         VStack {
             ForEach(products) { product in
