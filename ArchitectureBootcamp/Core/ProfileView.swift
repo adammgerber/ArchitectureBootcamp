@@ -37,9 +37,22 @@ extension View {
     }
 }
 
+extension EnvironmentValues {
+    @Entry var router: Router = MockRouter()
+}
+
 protocol Router {
     func showScreen<T: View>(@ViewBuilder destination: @escaping (Router) -> T)
     func dismissScreen()
+}
+
+struct MockRouter: Router {
+    func showScreen<T>(destination: @escaping (any Router) -> T) where T : View {
+        print("Mock router does not work.")
+    }
+    func dismissScreen() {
+        print("Mock router does not work.")
+    }
 }
 
 struct RouterView<Content: View>: View, Router {
@@ -68,6 +81,7 @@ struct RouterView<Content: View>: View, Router {
         NavigationStackIfNeeded(path: $path, addNavigationView: addNavigationView) {
             content(self)
         }
+        .environment(\.router, self)
     }
     
     func showScreen<T: View>(@ViewBuilder destination: @escaping (Router) -> T) {
@@ -125,14 +139,14 @@ struct NavigationStackIfNeeded<Content: View>: View {
 
 
 struct ProfileView: View {
-            
-    let router: Router
+       
+    @Environment(\.router) private var router
     
     var body: some View {
         VStack(spacing: 40) {
             Button {
-                router.showScreen { router in
-                    SettingsView(router: router)
+                router.showScreen { _ in
+                    SettingsView()
                 }
             } label: {
                 Text("Click me")
@@ -143,15 +157,15 @@ struct ProfileView: View {
 
 struct SettingsView: View {
     
-    let router: Router
-    
+    @Environment(\.router) private var router
+
     var body: some View {
         VStack {
             Text("Settings")
             
             Button {
-                router.showScreen { router in
-                    AccountView(router: router)
+                router.showScreen { _ in
+                    AccountView()
                 }
             } label: {
                 Text("Go forward")
@@ -168,15 +182,15 @@ struct SettingsView: View {
 
 struct AccountView: View {
     
-    let router: Router
-    
+    @Environment(\.router) private var router
+
     var body: some View {
         VStack {
             Text("Account")
             
             Button {
-                router.showScreen { router in
-                    AccountView(router: router)
+                router.showScreen { _ in
+                    AccountView()
                 }
             } label: {
                 Text("Go forward")
@@ -192,7 +206,7 @@ struct AccountView: View {
 }
 
 #Preview {
-    RouterView { router in
-        ProfileView(router: router)
+    RouterView { _ in
+        ProfileView()
     }
 }
