@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import RoutingPro
 
 struct ProfileView: View {
        

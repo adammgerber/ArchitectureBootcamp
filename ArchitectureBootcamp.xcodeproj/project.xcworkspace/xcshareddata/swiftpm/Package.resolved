@@ -1,0 +1,15 @@
+{
+  "originHash" : "3dd82bf63e467e279efa358b649aebe2456c6c6e48c92c675f9db015712e0358",
+  "pins" : [
+    {
+      "identity" : "routingpro",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/adammgerber/RoutingPro.git",
+      "state" : {
+        "branch" : "main",
+        "revision" : "acd25c7d6686a2eb3222afe8cea9552b3935c6e7"
+      }
+    }
+  ],
+  "version" : 3
+}

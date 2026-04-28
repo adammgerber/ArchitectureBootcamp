@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import RoutingPro
 
 /*
  ARCHITECTURE NOTES
@@ -52,6 +53,7 @@ Cons:
  - Business logic is not testable
  - Massive View Controller problem
  
+ 
  4. MVVM Architecture
  
  - DataManager is shared across the app, but access from the ViewModel
@@ -66,6 +68,7 @@ Cons:
  Cons:
  - More difficult to set up and inject dependencies
  - ViewModel lifecycle is outside of View lifecycle (cannot use SwiftUI Property Wrappers)
+ 
  
  5. MVVM Architecture + DI Container
  
@@ -95,6 +98,7 @@ Cons:
  - Single large interactor per module
  
  
+ 
  8. MVVM Architecture + Protocols + Shared Conformance + Builder (CoreBuilder)
  
  Pros:
@@ -106,6 +110,17 @@ Cons:
  - More work to set up and maintain
  
  
+ 
+ 9. VIPER
+ 
+ Pros:
+ - Same as #8 above
+ - Decoupled routing from Views
+ 
+ Cons:
+ - More work to set up and maintain
+
+
  */
 
 
@@ -138,6 +153,17 @@ class DataManager {
 }
 
 @MainActor
+struct CoreRouter {
+    let router: Router
+    
+    func goToProductView(product: Product) {
+        router.showScreen(.push) { _ in
+            Text(product.title)
+        }
+    }
+}
+
+@MainActor
 struct CoreInteractor {
     let dataManager: DataManager
     let userManager: UserManager
@@ -160,12 +186,12 @@ struct CoreInteractor {
     }
 }
 
-// ContentViewModelProtocol, ContentvViewModelDelegate, ContentViewModelDependencies, ContentViewModelInteractor
-protocol ContentViewModelInteractor {
+// ContentPresenterProtocol, ContentvViewModelDelegate, ContentPresenterDependencies, ContentPresenterInteractor
+protocol ContentPresenterInteractor {
     func getProducts() async throws -> [Product]
     func getUser() async throws -> String
 }
-extension CoreInteractor: ContentViewModelInteractor { }
+extension CoreInteractor: ContentPresenterInteractor { }
 
 protocol HomeViewModelInteractor {
     func getMovies() async throws -> [String]
@@ -180,15 +206,23 @@ protocol SettingsViewModelInteractor {
 extension CoreInteractor: SettingsViewModelInteractor { }
 
 
+@MainActor
+protocol ContentPresenterRouter {
+    func goToProductView(product: Product)
+}
+extension CoreRouter: ContentPresenterRouter { }
+
 @Observable
 @MainActor
-class ContentViewModel {
-    let interactor: ContentViewModelInteractor
+class ContentPresenter {
+    let interactor: ContentPresenterInteractor
+    let router: ContentPresenterRouter
 
     var products: [Product] = []
     
-    init(interactor: ContentViewModelInteractor) {
+    init(interactor: ContentPresenterInteractor, router: ContentPresenterRouter) {
         self.interactor = interactor
+        self.router = router
     }
     
     func loadData() async {
@@ -199,21 +233,29 @@ class ContentViewModel {
 
         }
     }
+    
+    func onProductPressed(product: Product) {
+        router.goToProductView(product: product)
+    }
 }
 
 struct ContentView: View {
         
-    @State var viewModel: ContentViewModel
+    @State var presenter: ContentPresenter
 
     var body: some View {
         VStack {
-            ForEach(viewModel.products) { product in
+            ForEach(presenter.products) { product in
                 Text(product.title)
+                    .onTapGesture {
+                        presenter.onProductPressed(product: product)
+                    }
             }
         }
+        .navigationTitle("Content View")
         .padding()
         .task {
-            await viewModel.loadData()
+            await presenter.loadData()
         }
     }
 }
@@ -282,9 +324,14 @@ class DependencyContainer {
     container.register(DataManager.self, service: DataManager(service: MockDataService()))
     container.register(UserManager.self, service: UserManager())
 
-    return ContentView(
-        viewModel: ContentViewModel(interactor: CoreInteractor(container: container))
-    )
+    return RouterView { router in
+        ContentView(
+            presenter: ContentPresenter(
+                interactor: CoreInteractor(container: container),
+                router: CoreRouter(router: router)
+            )
+        )
+    }
 //    return HomeView(
 //        viewModel: HomeViewModel(interactor: CoreInteractor(container: container))
 //    )

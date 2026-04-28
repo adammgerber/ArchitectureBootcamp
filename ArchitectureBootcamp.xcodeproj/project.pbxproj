@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		64CABA8F2FA0B2A000FCD5DE /* RoutingPro in Frameworks */ = {isa = PBXBuildFile; productRef = 64CABA8E2FA0B2A000FCD5DE /* RoutingPro */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		64DF61122F9CD30000D1C607 /* ArchitectureBootcamp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ArchitectureBootcamp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -23,6 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				64CABA8F2FA0B2A000FCD5DE /* RoutingPro in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +70,7 @@
 			);
 			name = ArchitectureBootcamp;
 			packageProductDependencies = (
+				64CABA8E2FA0B2A000FCD5DE /* RoutingPro */,
 			);
 			productName = ArchitectureBootcamp;
 			productReference = 64DF61122F9CD30000D1C607 /* ArchitectureBootcamp.app */;
@@ -94,6 +100,9 @@
 			);
 			mainGroup = 64DF61092F9CD30000D1C607;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				64CABA8D2FA0B2A000FCD5DE /* XCRemoteSwiftPackageReference "RoutingPro" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 64DF61132F9CD30000D1C607 /* Products */;
 			projectDirPath = "";
@@ -332,6 +341,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		64CABA8D2FA0B2A000FCD5DE /* XCRemoteSwiftPackageReference "RoutingPro" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/adammgerber/RoutingPro.git";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		64CABA8E2FA0B2A000FCD5DE /* RoutingPro */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 64CABA8D2FA0B2A000FCD5DE /* XCRemoteSwiftPackageReference "RoutingPro" */;
+			productName = RoutingPro;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 64DF610A2F9CD30000D1C607 /* Project object */;
 }
