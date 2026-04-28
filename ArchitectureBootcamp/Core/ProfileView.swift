@@ -15,6 +15,7 @@ struct ProfileView: View {
         List {
             segueSection
             alertSection
+            modalSection
         }
         .navigationTitle("Routing examples")
     }
@@ -80,6 +81,31 @@ struct ProfileView: View {
             }
         } header: {
             Text("Alerts")
+        }
+    }
+    
+    private var modalSection: some View {
+        Section {
+            Button {
+                router.showModal(
+                    backgroundColor: Color.red.opacity(0.5),
+                    transition: .move(edge: .top),
+                    destination: {
+                    RoundedRectangle(cornerRadius: 30)
+                        .fill(Color.blue)
+                        .frame(maxHeight: 250)
+                        .padding(40)
+                })
+            } label: {
+                Text("Show modal")
+            }
+            Button {
+                router.dismissModal()
+            } label: {
+                Text("Dismiss modal")
+            }
+        } header: {
+            Text("Modal")
         }
     }
 }

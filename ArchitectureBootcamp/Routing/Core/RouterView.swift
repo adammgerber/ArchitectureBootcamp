@@ -27,6 +27,10 @@ struct RouterView<Content: View>: View, Router {
 
     @State private var alert: AnyAppAlert? = nil
     @State private var alertOption: AlertType = .alert
+    
+    @State private var modalBackgroundColor: Color = Color.black.opacity(0.6)
+    @State private var modalTransition: AnyTransition = AnyTransition.opacity
+    @State private var modal: AnyDestination? = nil
 
     // Binding to the view stack from previous RouterViews
     @Binding var screenStack: [AnyDestination]
@@ -51,6 +55,7 @@ struct RouterView<Content: View>: View, Router {
                 .fullScreenCoverViewModifier(screen: $showFullScreenCover)
                 .showCustomAlert(type: alertOption, alert: $alert)
         }
+        .modalViewModifier(backgroundColor: modalBackgroundColor, transition: modalTransition, screen: $modal)
         .environment(\.router, self)
     }
     
@@ -91,5 +96,17 @@ struct RouterView<Content: View>: View, Router {
     
     func dismissAlert() {
         alert = nil
+    }
+    
+    func showModal<T: View>(backgroundColor: Color, transition: AnyTransition, @ViewBuilder destination: @escaping () -> T) {
+        self.modalBackgroundColor = backgroundColor
+        self.modalTransition = transition
+        let destination = AnyDestination(destination: destination())
+        self.modal = destination
+        
+    }
+    
+    func dismissModal() {
+        modal = nil
     }
 }

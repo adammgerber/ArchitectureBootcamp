@@ -17,6 +17,8 @@ protocol Router {
     
     func showAlert(_ option: AlertType, title: String, subtitle: String?, buttons: (@Sendable () -> AnyView)?)
     func dismissAlert()
+    func showModal<T: View>(backgroundColor: Color, transition: AnyTransition, @ViewBuilder destination: @escaping () -> T)
+    func dismissModal()
 }
 
 struct MockRouter: Router {
@@ -30,6 +32,13 @@ struct MockRouter: Router {
         print("Mock router does not work.")
     }
     func dismissAlert() {
+        print("Mock router does not work.")
+    }
+    func showModal<T: View>(backgroundColor: Color, transition: AnyTransition, @ViewBuilder destination: @escaping () -> T){
+        print("Mock router does not work.")
+        
+    }
+    func dismissModal() {
         print("Mock router does not work.")
     }
 }
