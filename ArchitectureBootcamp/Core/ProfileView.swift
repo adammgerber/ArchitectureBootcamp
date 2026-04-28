@@ -15,7 +15,11 @@ import SwiftUI
 
 struct AnyDestination: Hashable {
     let id = UUID().uuidString
-    var destination: () -> AnyView
+    var destination: AnyView
+    
+    init<T: View>(destination: T) {
+        self.destination = AnyView(destination)
+    }
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(id)
@@ -33,59 +37,47 @@ extension View {
     }
 }
 
+protocol Router {
+    func showScreen<T: View>(@ViewBuilder destination: () -> T)
+}
+
+struct RouterView<Content: View>: View, Router {
+    
+    @State private var path: [AnyDestination] = []
+    @ViewBuilder var content: (Router) -> Content
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            content(self)
+                .navigationDestination(for: AnyDestination.self) { value in
+                    value.destination
+                }
+        }
+    }
+    
+    func showScreen<T: View>(@ViewBuilder destination: () -> T) {
+        let destination = AnyDestination(destination: destination())
+        path.append(destination)
+    }
+}
+
 struct ProfileView: View {
     
     @State private var path: [AnyDestination] = []
     
     var body: some View {
-        NavigationStack(path: $path) {
+        RouterView { router in
             VStack(spacing: 40) {
                 Button {
-                    path.append(AnyDestination(destination: {
-                        Text("NEW VALUE!!!!!").any()
-                    }))
+                    router.showScreen {
+                        Color.blue
+                            .toolbarVisibility(.hidden, for: .navigationBar)
+                    }
                 } label: {
                     Text("Click me")
                 }
-                Button {
-                    path.append(AnyDestination(destination: {
-                        Text("\(12345)").any()
-                    }))
-                } label: {
-                    Text("Click me")
-                }
-                
-                Button {
-                    path.append(AnyDestination(destination: {
-                        Text("\(true.description)").any()
-                    }))
-                } label: {
-                    Text("Click me")
-                }
-                
-                Button {
-                    goToContentView()
-                } label: {
-                    Text("Click me")
-                }
-            }
-            .navigationDestination(for: AnyDestination.self) { value in
-                value.destination()
             }
         }
-    }
-    
-    func goToContentView() {
-        let container = DependencyContainer()
-        container.register(DataManager.self, service: DataManager(service: MockDataService()))
-        container.register(UserManager.self, service: UserManager())
-
-        path.append(AnyDestination(destination: {
-            ContentView(
-                viewModel: ContentViewModel(interactor: CoreInteractor(container: container))
-            )
-            .any()
-        }))
     }
 }
 
